@@ -1,18 +1,21 @@
 import {
-  AngularNodeAppEngine,
+  CommonEngine,
   createNodeRequestHandler,
   isMainModule,
   writeResponseToNodeResponse,
 } from '@angular/ssr/node';
 import express from 'express';
-import { dirname, resolve } from 'node:path';
+import { dirname, resolve, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import bootstrap from './main.server';
+import { APP_BASE_HREF } from '@angular/common';
 
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
+const indexHtml = join(serverDistFolder, 'index.server.html');
 
 const app = express();
-const angularApp = new AngularNodeAppEngine();
+const commonEngine = new CommonEngine();
 
 /**
  * Example Express Rest API endpoints can be defined here.
@@ -40,13 +43,19 @@ app.use(
 /**
  * Handle all other requests by rendering the Angular application.
  */
-app.use('/**', (req, res, next) => {
-  angularApp
-    .handle(req)
-    .then((response) =>
-      response ? writeResponseToNodeResponse(response, res) : next(),
-    )
-    .catch(next);
+app.get('**', (req, res, next) => {
+  const { protocol, originalUrl, baseUrl, headers } = req;
+
+  commonEngine
+    .render({
+      bootstrap,
+      documentFilePath: indexHtml,
+      url: `${protocol}://${headers.host}${originalUrl}`,
+      publicPath: browserDistFolder,
+      providers: [{ provide: APP_BASE_HREF, useValue: baseUrl }],
+    })
+    .then((html) => res.send(html))
+    .catch((err) => next(err));
 });
 
 /**
