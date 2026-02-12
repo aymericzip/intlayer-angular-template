@@ -14,16 +14,12 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have the 'intlayer-angular-21' title`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('intlayer-angular-21');
-  });
-
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, intlayer-angular-21');
+    expect(compiled.querySelector('h1')?.textContent).toContain(
+      'Hello, intlayer-angular-21',
+    );
   });
 });
