@@ -1,11 +1,11 @@
 import { Component } from "@angular/core";
-import { CommonModule } from "@angular/common";
+
 import { useLocale } from "angular-intlayer";
 
 @Component({
   selector: "app-locale-switcher",
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   template: `
     <div class="locale-switcher">
       <span class="locale-label">Current Locale: {{ locale() }}</span>
@@ -13,13 +13,15 @@ import { useLocale } from "angular-intlayer";
         [value]="locale()"
         (change)="setLocale($any($event.target).value)"
         class="locale-select"
-      >
-        <option *ngFor="let loc of availableLocales" [value]="loc">
-          {{ loc }}
-        </option>
+        >
+        @for (loc of availableLocales; track loc) {
+          <option [value]="loc">
+            {{ loc }}
+          </option>
+        }
       </select>
     </div>
-  `,
+    `,
   styles: [
     `
       .locale-switcher {
