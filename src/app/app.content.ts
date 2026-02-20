@@ -8,6 +8,7 @@ import {
   Dictionary,
   insert,
   file,
+  nest,
 } from 'intlayer';
 
 const appContent = {
